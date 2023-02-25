@@ -1,5 +1,7 @@
 use actix_web::{get, post, web, HttpResponse, Responder};
-use std::sync::Mutex;
+use std::{sync::Mutex, time::Duration};
+
+use tokio;
 
 pub struct AppStateWithCounter {
     pub app_name: String,
@@ -36,4 +38,18 @@ pub async fn manual_hello() -> impl Responder {
 
 pub async fn app() -> impl Responder {
     "Hello world!"
+}
+
+#[get("/sleep")]
+pub async fn sleep() -> impl Responder {
+    tokio::time::sleep(Duration::from_secs(5)).await;
+    "response"
+}
+
+#[get("/quit")]
+pub async fn quit() -> HttpResponse {
+    HttpResponse::Ok()
+        // .connection_type(http::ConnectionType::Close)
+        .force_close()
+        .finish()
 }
