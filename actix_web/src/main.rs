@@ -57,6 +57,11 @@ async fn main() -> std::io::Result<()> {
             .service(api::form)
             .service(api::show_count)
             .service(api::add_one)
+            .service(api::responder)
+            .service(api::responder_2)
+            .service(api::custom_type)
+            .service(api::stream)
+            .service(api::either)
     };
 
     let _one   = HttpServer::new(app).keep_alive(Duration::from_secs(75));
