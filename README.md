@@ -15,3 +15,5 @@ Rustのサンプルコード集です。
   - [Server](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch01-03-server.md)
   - [Extractors](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch01-04-extractors.md)
   - [Handlers](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch01-05-handlers.md)
+2. Advanced
+  - [Handlers](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-01-errors.md)

@@ -1,7 +1,9 @@
-use actix_web::{web, App, HttpResponse, HttpServer, guard, http};
-use std::{sync::Mutex, time::Duration, cell::Cell};
-
+use actix_web::{web, http, guard, App, HttpResponse, HttpServer};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+
+use std::sync::{Arc, Mutex, atomic::AtomicUsize};
+use std::time::Duration;
+use std::cell::Cell;
 
 mod config;
 mod api;
@@ -20,7 +22,8 @@ async fn main() -> std::io::Result<()> {
             counter: Mutex::new(0),
         });
         let state_counter = web::Data::new(api::StateStruct {
-            count: Cell::new(0),
+            local_count: Cell::new(0),
+            global_count: Arc::new(AtomicUsize::new(0)),
         });
 
         let www_guard = web::scope("/")
@@ -62,6 +65,10 @@ async fn main() -> std::io::Result<()> {
             .service(api::custom_type)
             .service(api::stream)
             .service(api::either)
+            .service(api::static_index)
+            .service(api::custom_error)
+            .service(api::custom_error_enum)
+            .service(api::map_err)
     };
 
     let _one   = HttpServer::new(app).keep_alive(Duration::from_secs(75));
