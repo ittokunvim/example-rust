@@ -258,3 +258,9 @@ async fn map_err() -> Result<&'static str> {
     let result: Result<&'static str, CustomError> = Err(CustomError { name: "test error" });
     Ok(result.map_err(|e| error::ErrorBadRequest(e.name))?)
 }
+
+// URL Dispatch
+
+pub async fn resource() -> HttpResponse {
+    HttpResponse::Ok().body("Resource")
+}

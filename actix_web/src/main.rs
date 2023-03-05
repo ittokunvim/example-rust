@@ -69,6 +69,7 @@ async fn main() -> std::io::Result<()> {
             .service(api::custom_error)
             .service(api::custom_error_enum)
             .service(api::map_err)
+            .service(web::resource("/resources").to(api::resource))
     };
 
     let _one   = HttpServer::new(app).keep_alive(Duration::from_secs(75));

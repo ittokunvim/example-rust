@@ -16,4 +16,5 @@ Rustのサンプルコード集です。
   - [Extractors](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch01-04-extractors.md)
   - [Handlers](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch01-05-handlers.md)
 2. Advanced
-  - [Handlers](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-01-errors.md)
+  - [Errors](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-01-errors.md)
+  - [URL Dispatch](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-02-url-dispatch.md)
