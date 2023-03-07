@@ -2,6 +2,7 @@ use actix_web::{get, post, web, http, body, error, Result, Error, Either, Respon
 use serde::{Serialize, Deserialize};
 use futures::{future::ok, stream::once};
 use actix_files::NamedFile;
+use log::info;
 
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -257,6 +258,13 @@ async fn custom_error_enum() -> Result<&'static str, CustomErrorEnum> {
 async fn map_err() -> Result<&'static str> {
     let result: Result<&'static str, CustomError> = Err(CustomError { name: "test error" });
     Ok(result.map_err(|e| error::ErrorBadRequest(e.name))?)
+}
+
+#[get("/err-logging")]
+async fn err_logging() -> Result<&'static str, CustomError> {
+    let err = CustomError { name: "Error Logging" };
+    info!("{}", err);
+    Err(err)
 }
 
 // URL Dispatch

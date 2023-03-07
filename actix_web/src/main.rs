@@ -1,4 +1,5 @@
 use actix_web::{web, http, guard, App, HttpResponse, HttpServer};
+use actix_web::middleware::Logger;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
 use std::sync::{Arc, Mutex, atomic::AtomicUsize};
@@ -8,8 +9,13 @@ use std::cell::Cell;
 mod config;
 mod api;
 
+#[rustfmt::skip]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_BACKTRACE", "1");
+    env_logger::init();
+
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
     builder
         .set_private_key_file("key.pem", SslFiletype::PEM)
@@ -38,6 +44,7 @@ async fn main() -> std::io::Result<()> {
             .route("/index.html", web::get().to(api::app));
 
         App::new()
+            .wrap(Logger::default())
             .configure(config::config)
             .app_data(counter)
             .app_data(config::json_config)
@@ -69,6 +76,7 @@ async fn main() -> std::io::Result<()> {
             .service(api::custom_error)
             .service(api::custom_error_enum)
             .service(api::map_err)
+            .service(api::err_logging)
             .service(web::resource("/resources").to(api::resource))
     };
 

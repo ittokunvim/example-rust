@@ -113,3 +113,78 @@ async fn map_err() -> Result<&'static str> {
     Ok(result.map_err(|e| error::ErrorBadRequest(e.name))?)
 }
 ```
+
+## エラーログ1
+
+Actix-webは、全てのエラーを`WARN`ログレベルでログに記録します。
+アプリケーションのログレベルが`DEBUG`に設定され、`RUST-BACKTRACE`が有効になっている場合、バックトレースもログに記録されます。
+
+```bash
+RUST_BACKTRACE=1 RUST_LOG=actix_web=debug cargo run
+```
+
+`Error`タイプは利用可能な場合、原因のエラーバックトレースを使用します。
+基礎となる障害がバックトレースを提供しない場合、新しいバックトレースは変換に発生したポイントを差して構築されます。
+
+## エラー処理の推奨事項
+
+アプリケーションが発生させるエラーは2つの大きなグループに分けて考えると良いでしょう。
+1つ目はユーザ向けのエラーと、2つ目はそれ以外のものです。
+
+前者の例としては、ユーザーが不正な入力をしたときに`ValidationError`をカプセル化した`UserError enum`を`failure`で指定することです。
+
+`display`で定義されたエラーメッセージは、ユーザーが読むことを明確に意識して書かれています。
+
+しかし全てのエラーに対してメッセージを送り返すことは望ましいことではありません。
+例として以下のようなものがあります。
+
+- データベースがダウンしてクライアントライブラリが接続タイムアウトエラー
+- HTMLテンプレートが不適切にフォーマットされてレンダリング時にエラーが発生するケース
+
+このような場合、エラーを一時的なエラーにマッピングして、ユーザーが利用できるようにすることが望ましいかもしれません。
+
+エラーをユーザーと向き合うものとそうでないものに分けることで、アプリケーション内部で発生するユーザーが見るはずのないエラーに誤って晒されることがないようにすることができるのです。
+
+## エラーログ2
+
+以下の例は、`env_logger, log`に依存する`middleware::Logger`を使った基本的なコードです。
+
+```rust
+use actix_web::middleware::Logger;
+use log::info;
+
+#[derive(Debug, Display, Error)]
+#[display(fmt = "my error: {}", name)]
+pub struct MyError {
+    name: &'static str,
+}
+
+// Use default implementation for `error_response()` method
+impl error::ResponseError for MyError {}
+
+#[get("/")]
+async fn index() -> Result<&'static str, MyError> {
+    let err = MyError { name: "test error" };
+    info!("{}", err);
+    Err(err)
+}
+
+#[rustfmt::skip]
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_BACKTRACE", "1");
+    env_logger::init();
+
+    HttpServer::new(|| {
+        let logger = Logger::default();
+
+        App::new()
+          .wrap(logger)
+          .service(index)
+    })
+    .bind_openssl(("127.0.0.1", 8080), builder)?
+    .run()
+    .await
+}
+```
