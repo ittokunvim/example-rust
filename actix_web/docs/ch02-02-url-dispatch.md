@@ -196,27 +196,235 @@ foo/abc/def/a/b/c   -> Params {'bar': 'abc', 'tail': 'def/a/b/c'}
 
 ## ルートのスコープ
 
+スコープは、ルートパスが共通するルートを整理するのに役立ちます。
+スコープの中にスコープを入れ子にすることもできます。
 
+例えば、"Users"を表示するためのエンドポイントのパスを整理するとした場合、以下のようなパスが例に上がります。
+
+- /users
+- /users/show
+- /users/show/{id}
+
+```rust
+#[get("/show/{id}")]
+async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
+    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new().service(
+            web::scope("/users")
+                .service(user_detail),
+        )
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+スコープ付きパスは、リソースとして可変パスセグメントを含むことができます。
+
+`HttpRequest::match_info()`からは、可変パスセグメントを取得することができます。
+パス抽出器は、スコープレベルの変数セグメントを抽出することも可能です。
 
 ## マッチ情報
 
+マッチしたパスセグメントを表す全ての値は、`HttpRequest::match_info`で利用可能です。
+特定の値は`Path::get()`で取得することができます。
 
+```rust
+#[get("/a/{v1}/{v2}/")]
+async fn index(req: HttpRequest) -> HttpResponse {
+    let v1: u8 = req.match_info().get("v1").unwrap().parse().unwrap();
+    let v2: u8 = req.match_info().query("v2").parse().unwrap();
+    let (v3, v4): (u8, u8) = req.match_info().load().unwrap();
+    HttpResponse::Ok().body(format!("Values {} {} {} {}", v1, v2, v3, v4))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(index))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
+}
+```
+
+このパスは、`/a/1/2`でアクセスすることができます。
 
 ### パス情報抽出
 
+Actix-webはタイプセーフなパス情報抽出のための機能を提供しています。
+パスの情報抽出では、目的地の型をいくつかの異なる形で定義することができます。
+最も単純なアプローチは、タプル型を使うことです。
+例えば、パスパターン`/{id}/{username}`と`Path<(u32, String)`型をマッチさせることはできますが、`Path<String, String, String>`型は常に失敗します。
 
+```rust
+#[get("/{username}/{id}/index.html")] // <- define path parameters
+async fn index(info: web::Path<(String, u32)>) -> Result<String> {
+    let info = info.into_inner();
+    Ok(format!("Welcome {}! id: {}", info.0, info.1))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(index))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
+}
+```
+
+また、パスパターン情報を構造体に抽出することも可能です。
+この場合、構造体は`serde`の`Deserialize`トレイトを実装する必要があります。
+
+```rust
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Info {
+    username: String,
+}
+
+// extract path info using serde
+#[get("/{username}/index.html")] // <- define path parameters
+async fn index(info: web::Path<Info>) -> Result<String> {
+    Ok(format!("Welcome {}!", info.username))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(index))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
+}
+```
+
+`Query`は、リクエスト、クエリ、パラメータに対して同様の機能を提供します。
 
 ## リソースURL生成
 
+`HttpRequest.url_for()`メソッドを使用すると、リソースのパターンに基づいてURLを生成することができます。
 
+```rust
+#[get("/test/")]
+async fn index(req: HttpRequest) -> Result<HttpResponse> {
+    let url = req.url_for("foo", ["1", "2", "3"])?; // <- generate url for "foo" resource
+
+    Ok(HttpResponse::Found()
+        .insert_header((header::LOCATION, url.as_str()))
+        .finish())
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    use actix_web::{web, App, HttpServer};
+
+    HttpServer::new(|| {
+        App::new()
+            .service(
+                web::resource("/test/{a}/{b}/{c}")
+                    .name("foo") // <- set resource name, then it could be used in `url_for`
+                    .guard(guard::Get())
+                    .to(HttpResponse::Ok),
+            )
+            .service(index)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+これは文字列`http://example.com/test/1/2/3`のようなものを返します。
+`url_for()`メソッドはURLオブジェクトを返すので、このurlを変更できます。
+`url_for()`は、名前のついたリソースに対してのみ呼び出すことができ、それ以外ではエラーを返します。
 
 ## 外部リソース
 
+有効なURLであるリソースは、外部リソースとして登録することができます。
+これらはURL生成の目的のみに有用であり、リクエスト時のマッチングに考慮されることはありません。
 
+```rust
+use actix_web::{get, App, HttpRequest, HttpServer, Responder};
+
+#[get("/")]
+async fn index(req: HttpRequest) -> impl Responder {
+    let url = req.url_for("youtube", ["oHg5SJYRHA0"]).unwrap();
+    assert_eq!(url.as_str(), "https://youtube.com/watch/oHg5SJYRHA0");
+
+    url.to_string()
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .service(index)
+            .external_resource("youtube", "https://youtube.com/watch/{video_id}")
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
 
 ## パス正規化とリダイレクト機能
 
+正規化は次のように書きます。
 
+- パスの末尾にスラッシュを追加する
+- 複数のスラッシュを1つに置き換える。
+
+ハンドラは正しく解決されるパスが見つかれば、すぐ戻ります。
+正規化条件の順序は、`1) merge, 2) both merge and append, 3) append`です。
+パスがこれらの条件のうち少なくとも1つ以上解決する場合、新しいパスにリダイレクトされます。
+
+```rust
+async fn index() -> HttpResponse {
+    HttpResponse::Ok().body("Hello")
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    use actix_web::{web, App, HttpServer};
+
+    HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::NormalizePath::default())
+            .route("/resource", web::to(index))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+この例では、`//resource///`は`/resource/`にリダイレクトされます。
+
+以下の例ではパス席かハンドラは全てのメソッドに対して登録されていますが、POSTリクエストをリダイレクトするためにこのメカニズムを頼るべきではありません。
+スラッシュを適用したNot Foundのリダイレクトは、POSTリクエストをGETに変えてしまい、元のリクエストにあったPOSTデータを失ってしまします。
+
+GETリクエストにのみパス正規化を登録することも可能です。
+
+```rust
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::NormalizePath::default())
+            .service(index)
+            .default_service(web::route().method(Method::GET))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
 
 ### Prefixを使用したアプリケーションの構成
 

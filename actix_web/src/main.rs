@@ -1,4 +1,4 @@
-use actix_web::{http, App, HttpServer};
+use actix_web::{http, middleware, web, App, HttpServer};
 use actix_web::middleware::Logger;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 
@@ -22,6 +22,8 @@ async fn main() -> std::io::Result<()> {
     let app = move || {
         App::new()
             .wrap(Logger::default())
+            .wrap(middleware::NormalizePath::trim())  // url-dispatch/path-normalization
+            .default_service(web::route().method(http::Method::GET))  // url-dispatch/path-normalization
             .configure(routes::application_routes)
             .configure(routes::server_routes)
             .configure(routes::extractor_routes)
