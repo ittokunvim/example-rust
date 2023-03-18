@@ -18,3 +18,4 @@ Rustのサンプルコード集です。
 2. Advanced
   - [Errors](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-01-errors.md)
   - [URL Dispatch](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-02-url-dispatch.md)
+  - [Testing](https://github.com/ittokun/example-rust/tree/main/actix_web/docs/ch02-05-testing.md)

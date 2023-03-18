@@ -30,6 +30,7 @@ async fn main() -> std::io::Result<()> {
             .configure(routes::handler_routes)
             .configure(routes::error_routes)
             .configure(routes::url_dispatch_routes)
+            .configure(routes::testing_routes)
     };
 
     let _one   = HttpServer::new(app).keep_alive(Duration::from_secs(75));
