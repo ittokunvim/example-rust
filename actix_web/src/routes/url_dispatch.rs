@@ -1,4 +1,4 @@
-use actix_web::{get, web, guard, http, HttpResponse, HttpRequest};
+use actix_web::{get, guard, http, web::{self, service}, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -92,13 +92,13 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 web::resource("/generate-resource-urls/{a}/{b}/{c}")
                     .name("foo")
                     .guard(guard::Get())
-                    .to(index)
+                    .to(index),
             )
             .service(generate_resource_urls)
             // External resources
             .service(external_resources)
             // Path normalization
-            .route("/path-normalize", web::get().to(index))
+            .route("/path-normalize", web::get().to(index)),
     );
     cfg.external_resource("youtube", "https://youtube.com/watch/{video_id}");
 }

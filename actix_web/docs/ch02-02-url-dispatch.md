@@ -428,7 +428,38 @@ async fn main() -> std::io::Result<()> {
 
 ### Prefixを使用したアプリケーションの構成
 
+`web::scope()`メソッドでは、特定のアプリケーションスコープを設定することができます。
+以下のスコープはリソース設定によって追加されるすべてのリソースパターンの前に付加されるリソースプレフィクスを表します。
+これは同じリソース名を維持したまま、含まれる`callable's`の作者が意図したのとは異なる場所にルートのセットをマウントするために使用できます。
 
+```rust
+#[get("/show")]
+async fn show_users() -> HttpResponse {
+    HttpResponse::Ok().body("Show users")
+}
+
+#[get("/show/{id}")]
+async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
+    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new().service(
+            web::scope("/users")
+                .service(show_users)
+                .service(user_detail),
+        )
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+上記の例では、`show_users`ルートでアプリケーションのスコープに追加し、`/show`ではなく`/users/show`の有効なルートパターンを持ちます。
+そしてURLパスが`/users/show`である場合にのみルートがマッチし、`show_users`で`HttpRequest.url_for()`関数が呼ばれると、同じパスのURLを生成します。
 
 ## カスタムルートガード
 
