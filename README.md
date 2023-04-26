@@ -20,10 +20,18 @@ Rustのサンプルコード集です。
   - [URL Dispatch](https://github.com/ittokun/example-rust/tree/main/docs/actix_web/ch02-02-url-dispatch.md)
   - [Testing](https://github.com/ittokun/example-rust/tree/main/docs/actix_web/ch02-05-testing.md)
 
-  ### seaORM
+### seaORM
+
+> Ref: https://www.sea-ql.org/SeaORM/docs/index/
 
 0. 序章
   - [ORMとは](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-01-what-is-orm.md)
   - [非同期プログラミング](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-02-async-programming.md)
   - [SeaORMの概念](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-03-seaorm-concepts.md)
   - [チュートリアルと例](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-04-tutorial-examples.md)
+
+### SeaORM Tutorials
+
+> Ref: https://www.sea-ql.org/sea-orm-tutorial/
+
+0. [はじめに](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch00-00-introduction.md)
