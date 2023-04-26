@@ -22,5 +22,6 @@ Rustのサンプルコード集です。
 
   ### seaORM
 
-  0. 序章
-    - [ORMとは](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-01-what-is-orm.md)
+0. 序章
+  - [ORMとは](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-01-what-is-orm.md)
+  - [非同期プログラミング](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-02-async-programming.md)
