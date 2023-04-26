@@ -2,7 +2,7 @@
 
 Rustのサンプルコード集です。
 
-## Actix Web
+### Actix Web
 
 > https://actix.rs/docs/
 
@@ -19,3 +19,8 @@ Rustのサンプルコード集です。
   - [Errors](https://github.com/ittokun/example-rust/tree/main/docs/actix_web/ch02-01-errors.md)
   - [URL Dispatch](https://github.com/ittokun/example-rust/tree/main/docs/actix_web/ch02-02-url-dispatch.md)
   - [Testing](https://github.com/ittokun/example-rust/tree/main/docs/actix_web/ch02-05-testing.md)
+
+  ### seaORM
+
+  0. 序章
+    - [ORMとは](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/ch00-01-what-is-orm.md)
