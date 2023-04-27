@@ -35,3 +35,4 @@ Rustのサンプルコード集です。
 > Ref: https://www.sea-ql.org/sea-orm-tutorial/
 
 0. [はじめに](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch00-00-introduction.md)
+1. [バックエンドSeaORM](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-00-backend-seaorm.md)
