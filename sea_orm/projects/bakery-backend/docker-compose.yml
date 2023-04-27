@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  rust:
+    image: "rust:latest"
+    volumes:
+      - ./:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    tty: true
+    depends_on:
+      - postgres
+
+  postgres:
+    image: "postgres:14"
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: root
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+volumes:
+  cargo-cache: {}
+  target-cache: {}
+  pgdata: {}
