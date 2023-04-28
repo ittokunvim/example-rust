@@ -2,13 +2,15 @@ version: "3"
 
 services:
   rust:
-    image: "rust:latest"
+    build: ./
     volumes:
       - ./:/app
       - cargo-cache:/usr/local/cargo/registry
       - target-cache:/app/target
     working_dir: /app
     tty: true
+    environment:
+      DATABASE_URL: postgres://postgres:password@postgres:5432/bakeries_db
     depends_on:
       - postgres
 
