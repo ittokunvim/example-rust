@@ -1,8 +1,8 @@
 use futures::executor::block_on;
 use sea_orm::{ConnectionTrait, Database, DbBackend, DbErr, Statement};
 
-const DB_URL: &str = "postgres://root:root@postgres:5432";
-const DB_NAME: &str = "bakery";
+const DB_URL: &str = "postgres://postgres:password@postgres:5432";
+const DB_NAME: &str = "bakeries_db";
 
 async fn run() -> Result<(), DbErr> {
     let db = Database::connect(DB_URL).await?;
