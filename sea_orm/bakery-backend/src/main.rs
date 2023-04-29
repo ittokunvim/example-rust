@@ -1,5 +1,10 @@
+mod migrator;
+
 use futures::executor::block_on;
 use sea_orm::{ConnectionTrait, Database, DbBackend, DbErr, Statement};
+use sea_orm_migration::prelude::*;
+
+use migrator::Migrator;
 
 const DB_URL: &str = "postgres://postgres:password@postgres:5432";
 const DB_NAME: &str = "bakeries_db";
@@ -7,7 +12,7 @@ const DB_NAME: &str = "bakeries_db";
 async fn run() -> Result<(), DbErr> {
     let db = Database::connect(DB_URL).await?;
 
-    let _db = &match db.get_database_backend() {
+    let db = &match db.get_database_backend() {
         DbBackend::MySql => {
             db.execute(Statement::from_string(
                 db.get_database_backend(),
@@ -35,6 +40,12 @@ async fn run() -> Result<(), DbErr> {
         }
         DbBackend::Sqlite => db,
     };
+
+    let schema_manager = SchemaManager::new(db);
+
+    Migrator::refresh(db).await?;
+    assert!(schema_manager.has_table("bakery").await?);
+    assert!(schema_manager.has_table("chef").await?);
 
     Ok(())
 }

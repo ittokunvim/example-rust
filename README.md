@@ -37,4 +37,5 @@ Rustのサンプルコード集です。
 0. [はじめに](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch00-00-introduction.md)
 1. [バックエンドSeaORM](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-00-backend-seaorm.md)
    - [セットアップ](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-01-setup.md)
-   - [マイグレーション](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-02-migration.md)
+   - [マイグレーション(CLI)](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-02-migration-cli.md)
+   - [マイグレーション(API)](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-03-migration-api.md)

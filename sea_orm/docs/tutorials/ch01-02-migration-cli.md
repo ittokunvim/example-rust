@@ -1,4 +1,4 @@
-# マイグレーション
+# マイグレーション(CLI)
 
 > Ref: https://www.sea-ql.org/sea-orm-tutorial/ch01-02-migration-cli.html
 
