@@ -39,3 +39,4 @@ Rustのサンプルコード集です。
    - [セットアップ](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-01-setup.md)
    - [マイグレーション(CLI)](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-02-migration-cli.md)
    - [マイグレーション(API)](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-03-migration-api.md)
+   - [エンティティ](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-04-entity.md)
