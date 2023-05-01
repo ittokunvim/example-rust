@@ -97,6 +97,35 @@ async fn run() -> Result<(), DbErr> {
     let bakeries = Bakery::find().all(db).await?;
     assert!(bakeries.is_empty());
 
+    let la_boulangerie = bakery::ActiveModel {
+        name: Set("La Boulangerie".to_owned()),
+        profit_margin: Set(0.0),
+        ..Default::default()
+    };
+    let bakery_res = Bakery::insert(la_boulangerie).exec(db).await?;
+
+    for chef_name in ["Jolie", "Charles", "Madeleine", "Frederic"] {
+        let chef = chef::ActiveModel {
+            name: Set(chef_name.to_owned()),
+            bakery_id: Set(bakery_res.last_insert_id),
+            ..Default::default()
+        };
+        Chef::insert(chef).exec(db).await?;
+    }
+
+    let la_boulangerie = Bakery::find_by_id(bakery_res.last_insert_id)
+        .one(db)
+        .await?
+        .unwrap();
+
+    let chefs = la_boulangerie.find_related(Chef).all(db).await?;
+    let mut chef_names = chefs.iter().map(|chef| &chef.name).collect::<Vec<_>>();
+    chef_names.sort_unstable();
+
+    assert_eq!(chef_names, ["Charles", "Frederic", "Jolie", "Madeleine"]);
+
+    la_boulangerie.delete(db).await?;
+
     Ok(())
 }
 
