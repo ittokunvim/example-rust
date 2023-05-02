@@ -12,5 +12,6 @@ version = "0.11.3"
 features = [
 	"sqlx-postgres",
 	"runtime-async-std-native-tls",
-	"macros"
+	"macros",
+	"mock",
 ]

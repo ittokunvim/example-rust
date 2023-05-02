@@ -126,6 +126,122 @@ async fn run() -> Result<(), DbErr> {
 
     la_boulangerie.delete(db).await?;
 
+    let db: &DatabaseConnection = &MockDatabase::new(DatabaseBackend::Postgres)
+        .append_query_results(vec![
+            vec![bakery::Model {
+                id: 1,
+                name: "Happy Bakery".to_owned(),
+                profit_margin: 0.0,
+            }],
+            vec![
+                bakery::Model {
+                    id: 1,
+                    name: "Happy Bakery".to_owned(),
+                    profit_margin: 0.0,
+                },
+                bakery::Model {
+                    id: 2,
+                    name: "Sad Bakery".to_owned(),
+                    profit_margin: 100.0,
+                },
+                bakery::Model {
+                    id: 3,
+                    name: "La Boulangerie".to_owned(),
+                    profit_margin: 17.89,
+                },
+            ],
+        ])
+        .append_query_results(vec![vec![
+            chef::Model {
+                id: 1,
+                name: "Jolie".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 2,
+                name: "Charles".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 3,
+                name: "Madeleine".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 4,
+                name: "Frederic".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+        ]])
+        .into_connection();
+
+    let happy_bakery = Bakery::find().one(db).await?;
+    assert_eq!(
+        happy_bakery.unwrap(),
+        bakery::Model {
+            id: 1,
+            name: "Happy Bakery".to_owned(),
+            profit_margin: 0.0,
+        }
+    );
+
+    let all_bakeries = Bakery::find().all(db).await?;
+    assert_eq!(
+        all_bakeries,
+        vec![
+            bakery::Model {
+                id: 1,
+                name: "Happy Bakery".to_owned(),
+                profit_margin: 0.0,
+            },
+            bakery::Model {
+                id: 2,
+                name: "Sad Bakery".to_owned(),
+                profit_margin: 100.0,
+            },
+            bakery::Model {
+                id: 3,
+                name: "La Boulangerie".to_owned(),
+                profit_margin: 17.89,
+            },
+        ]
+    );
+
+    let la_boulangerie_chefs = Chef::find().all(db).await?;
+    assert_eq!(
+        la_boulangerie_chefs,
+        vec![
+            chef::Model {
+                id: 1,
+                name: "Jolie".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 2,
+                name: "Charles".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 3,
+                name: "Madeleine".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+            chef::Model {
+                id: 4,
+                name: "Frederic".to_owned(),
+                contact_details: None,
+                bakery_id: 3,
+            },
+        ]
+    );
+
     Ok(())
 }
 
