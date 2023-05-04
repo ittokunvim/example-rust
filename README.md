@@ -43,3 +43,4 @@ Rustのサンプルコード集です。
    - [CRUDの基本操作](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-05-crud.md)
    - [リレーションセレクト](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-06-relational-select.md)
    - [モックテスト](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-07-testing-mock.md)
+   - [SeaQuery](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-08-sea-query.md)

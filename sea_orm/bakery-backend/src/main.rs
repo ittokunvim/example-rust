@@ -4,12 +4,18 @@ mod migrator;
 use futures::executor::block_on;
 use sea_orm::*;
 use sea_orm_migration::prelude::*;
+use sea_query::{Alias, Query};
 
 use entities::{prelude::*, *};
 use migrator::Migrator;
 
 const DB_URL: &str = "postgres://postgres:password@postgres:5432";
 const DB_NAME: &str = "bakeries_db";
+
+#[derive(FromQueryResult)]
+struct ChefNameResult {
+    name: String,
+}
 
 async fn run() -> Result<(), DbErr> {
     let db = Database::connect(DB_URL).await?;
@@ -123,6 +129,46 @@ async fn run() -> Result<(), DbErr> {
     chef_names.sort_unstable();
 
     assert_eq!(chef_names, ["Charles", "Frederic", "Jolie", "Madeleine"]);
+
+    let columns: Vec<Alias> = ["name", "profit_margin"]
+        .into_iter()
+        .map(Alias::new)
+        .collect();
+    let mut stmt = Query::insert();
+    stmt.into_table(bakery::Entity).columns(columns);
+    // Invoke `values_panic()` for each row
+    stmt.values_panic(["SQL Bakery".into(), (-100.0).into()]);
+    let builder = db.get_database_backend();
+    db.execute(builder.build(&stmt)).await?;
+
+    let column = (chef::Entity, Alias::new("name"));
+    let mut stmt = Query::select();
+    stmt.column(column.clone())
+        .from(chef::Entity)
+        .join(
+            JoinType::Join,
+            bakery::Entity,
+            Expr::col(Alias::new("bakery_id")).equals((bakery::Entity, Alias::new("id"))),
+        )
+        .order_by(column, Order::Asc);
+    let builder = db.get_database_backend();
+    let chef = ChefNameResult::find_by_statement(builder.build(&stmt))
+        .all(db)
+        .await?;
+    let chef_names = chef.into_iter().map(|chef| chef.name).collect::<Vec<_>>();
+    assert_eq!(
+        chef_names,
+        vec!["Charles", "Frederic", "Jolie", "Madeleine"]
+    );
+
+    let query = Query::delete()
+        .from_table(bakery::Entity)
+        .cond_where(Cond::any().add(Expr::col(bakery::Column::Name).eq("SQL Bakery")))
+        .to_owned();
+    assert_eq!(
+        query.to_string(PostgresQueryBuilder),
+        r#"DELETE FROM "bakery" WHERE "name" = 'SQL Bakery'"#
+    );
 
     la_boulangerie.delete(db).await?;
 
