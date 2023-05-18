@@ -44,3 +44,9 @@ Rustのサンプルコード集です。
    - [リレーションセレクト](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-06-relational-select.md)
    - [モックテスト](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-07-testing-mock.md)
    - [SeaQuery](https://github.com/ittokun/example-rust/tree/main/sea_orm/docs/tutorials/ch01-08-sea-query.md)
+
+### Bevy (The Book)
+
+> Ref: https://bevyengine.org/learn/book/introduction/
+
+0. [はじめに](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch00-00-introduction.md)
