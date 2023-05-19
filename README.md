@@ -50,3 +50,4 @@ Rustのサンプルコード集です。
 > Ref: https://bevyengine.org/learn/book/introduction/
 
 0. [はじめに](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch00-00-introduction.md)
+1. [とりあえず動かす](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-00-getting-started.md)
