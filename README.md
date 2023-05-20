@@ -52,3 +52,4 @@ Rustのサンプルコード集です。
 0. [はじめに](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch00-00-introduction.md)
 1. [とりあえず動かす](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-00-getting-started.md)
    - [セットアップ](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-01-setup.md)
+   - [アプリ](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-02-apps.md)
