@@ -54,3 +54,4 @@ Rustのサンプルコード集です。
    - [セットアップ](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-01-setup.md)
    - [アプリ](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-02-apps.md)
    - [ECS](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-03-ecs.md)
+   - [プラグイン](https://github.com/ittokun/example-rust/tree/main/bevy/docs/ch01-04-plugins.md)
